@@ -192,8 +192,6 @@ if(0){
            i=text.length;
        }
     }
-    
-    
     console.log(text);
 }
 
