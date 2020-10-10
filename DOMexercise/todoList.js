@@ -1,9 +1,18 @@
 //localStorage.clear();
 
 let table = document.querySelector("table");
-let input = document.querySelector("#item");
+let inputItem = document.querySelector("#item");
+let inputDate = document.querySelector("#date")
 let itemBtn = document.querySelector("#itemBtn");
-let newItem = ``;
+
+function Task(text, time = 0) {
+    this.id = IDcounter;
+    IDcounter++;
+    localStorage.setItem(`IDcounter`, IDcounter);
+    this.text = text;
+    this.time = new Date(time);
+    this.done = false;
+  }
 
 let tasks = [];
 if (localStorage.getItem(`tasks`) === null)
@@ -18,38 +27,26 @@ if (localStorage.getItem(`IDcounter`) === null)
   localStorage.setItem(`IDcounter`, 0);
 let IDcounter = localStorage.getItem(`IDcounter`);
 
-console.log(localStorage);
-
 for (let task in tasks) {
   viewTask(tasks[task]);
 }
 
 itemBtn.onclick = function () {
-  newItemText = input.value;
-  addTask(newItemText);
+  newItemText = inputItem.value;
+  newItemDate = inputDate.value;
+  addTask(newItemText, newItemDate);
   viewTask(tasks[tasks.length - 1]);
-  input.value = ``;
+  inputItem.value = ``;
 };
 
-function Task(text, time = 0) {
-  this.id = IDcounter;
-  IDcounter++;
-  localStorage.setItem(`IDcounter`, IDcounter);
-  this.text = text;
-  this.time = new Date();
-  this.time.setDate(this.time.getDate() + time);
-  this.done = false;
-}
-
-function addTask(newItemText) {
-  task = new Task(this.newItemText);
-  tasks.push(task);
-  updateServer();
-  console.log(tasks);
-}
-
-function editTask(ID){
-
+function addTask(newItemText, newItemDate) {
+    if (newItemDate===``) alert("Please choose a date")
+    else{
+        task = new Task(this.newItemText, this.newItemDate);
+        tasks.push(task);
+        updateServer();
+        console.log(tasks);
+    }
 }
 
 function viewTask(task) {
@@ -74,21 +71,23 @@ function viewTask(task) {
   thDate.innerHTML = task.time.toDateString();
   thDone.innerHTML = (task.done) ? `yes` : `no`;
   table.appendChild(item);
-  edit.onclick=() => {
-      thTask.setAttribute(`contenteditable`,true);
-      thTask.focus();
-      thTask.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-          task.text=thTask.innerHTML;
-          updateServer();
-          thTask.setAttribute(`contenteditable`,false);
-        }
-    });
-  }
+  edit.onclick=() => editTask(task,thTask);
   delet.onclick = () => {
     deleteTask(task, item);
   };
-  input.focus();
+  inputItem.focus();
+}
+
+function editTask(task,thTask){
+        thTask.setAttribute(`contenteditable`,true);
+        thTask.focus();
+        thTask.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                task.text=thTask.innerHTML;
+                updateServer();
+                thTask.setAttribute(`contenteditable`,false);
+            }
+        });
 }
 
 function deleteTask(task, DOMitem) {
