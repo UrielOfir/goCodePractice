@@ -9,6 +9,9 @@ let tasks = [];
 if (localStorage.getItem(`tasks`) === null)
   localStorage.setItem(`tasks`, JSON.stringify(tasks));
 tasks = JSON.parse(localStorage.getItem(`tasks`));
+for (i in tasks){
+    tasks[i].time= new Date (tasks[i].time);
+}
 console.log(tasks);
 
 if (localStorage.getItem(`IDcounter`) === null)
@@ -41,7 +44,12 @@ function Task(text, time = 0) {
 function addTask(newItemText) {
   task = new Task(this.newItemText);
   tasks.push(task);
-  updateServer;
+  updateServer();
+  console.log(tasks);
+}
+
+function editTask(ID){
+
 }
 
 function viewTask(task) {
@@ -66,6 +74,17 @@ function viewTask(task) {
   thDate.innerHTML = task.time.toDateString();
   thDone.innerHTML = (task.done) ? `yes` : `no`;
   table.appendChild(item);
+  edit.onclick=() => {
+      thTask.setAttribute(`contenteditable`,true);
+      thTask.focus();
+      thTask.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          task.text=thTask.innerHTML;
+          updateServer();
+          thTask.setAttribute(`contenteditable`,false);
+        }
+    });
+  }
   delet.onclick = () => {
     deleteTask(task, item);
   };
@@ -78,7 +97,7 @@ function deleteTask(task, DOMitem) {
   const index = tasks.indexOf(task);
   if (index > -1) {
     tasks.splice(index, 1);
-    updateServer;
+    updateServer();
   }
 }
 
