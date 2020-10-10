@@ -52,17 +52,7 @@ function viewTask(task) {
   let thDone = document.createElement(`th`);
   let delet = document.createElement(`button`);
   let edit = document.createElement(`button`);
-  let lable = document.createElement(`lable`);
-  lable.className = "switch";
-  let done = document.createElement(`input`);
-  done.type = "checkbox";
-  done.setAttribute("checked","");
-  let span = document.createElement(`span`);
-  span.className="slider round";
-  lable.appendChild(done);
-  done.appendChild(span);
-  thDone.appendChild(lable);
-  
+   
 
   item.appendChild(thTask);
   item.appendChild(thDate);
@@ -74,7 +64,7 @@ function viewTask(task) {
   edit.innerHTML = "Edit";
   thTask.innerHTML = task.text;
   thDate.innerHTML = task.time.toDateString();
-
+  thDone.innerHTML = (task.done) ? `yes` : `no`;
   table.appendChild(item);
   delet.onclick = () => {
     deleteTask(task, item);
