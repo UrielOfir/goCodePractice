@@ -2,7 +2,7 @@
 
 let table = document.querySelector("table");
 let inputItem = document.querySelector("#item");
-let inputDate = document.querySelector("#date")
+let inputDate = document.querySelector("#date");
 let itemBtn = document.querySelector("#itemBtn");
 
 function Task(text, time = 0) {
@@ -34,18 +34,22 @@ for (let task in tasks) {
 itemBtn.onclick = function () {
   newItemText = inputItem.value;
   newItemDate = inputDate.value;
-  addTask(newItemText, newItemDate);
-  viewTask(tasks[tasks.length - 1]);
+  console.log(inputDate.value);
+  if (addTask(newItemText, newItemDate)){
+    viewTask(tasks[tasks.length - 1]);
+  }
   inputItem.value = ``;
 };
 
 function addTask(newItemText, newItemDate) {
-    if (newItemDate===``) alert("Please choose a date")
+    if (newItemDate===``) {alert("Please choose a date")
+        return false;}
     else{
         task = new Task(this.newItemText, this.newItemDate);
         tasks.push(task);
         updateServer();
-        console.log(tasks);
+        console.log(tasks)
+        return true;
     }
 }
 
@@ -57,6 +61,7 @@ function viewTask(task) {
   let thDone = document.createElement(`th`);
   let delet = document.createElement(`button`);
   let edit = document.createElement(`button`);
+  let done = document.createElement(`button`);
    
 
   item.appendChild(thTask);
@@ -64,41 +69,90 @@ function viewTask(task) {
   item.appendChild(thDone);
   item.appendChild(edit);
   item.appendChild(delet);
+  item.appendChild(done);
 
   delet.innerHTML = "Delete";
   edit.innerHTML = "Edit";
+  done.innerHTML="Done";
   thTask.innerHTML = task.text;
   thDate.innerHTML = task.time.toDateString();
-  thDone.innerHTML = (task.done) ? `yes` : `no`;
   table.appendChild(item);
-  edit.onclick=() => editTask(task,thTask);
-  delet.onclick = () => {
-    deleteTask(task, item);
-  };
+  doneHandler();
+  edit.onclick=() => editTask();
+  delet.onclick = () =>   deleteTask();
+  done.onclick= () => {
+        task.done= (task.done) ? false : true;
+        updateServer();
+        doneHandler();
+};
   inputItem.focus();
-}
 
-function editTask(task,thTask){
-        thTask.setAttribute(`contenteditable`,true);
-        thTask.focus();
-        thTask.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                task.text=thTask.innerHTML;
-                updateServer();
-                thTask.setAttribute(`contenteditable`,false);
-            }
-        });
-}
-
-function deleteTask(task, DOMitem) {
-  DOMitem.style.display = `none`;
-
-  const index = tasks.indexOf(task);
-  if (index > -1) {
-    tasks.splice(index, 1);
-    updateServer();
+  function doneHandler(){
+    if (task.done===false){
+        done.innerHTML= "Undone";
+        thDone.innerHTML= "Yes";
+    }
+    else {
+        done.innerHTML= "Done";
+        thDone.innerHTML= "No";
+    }
   }
+
+    function editTask(){
+        
+            thTask.setAttribute(`contenteditable`,true);
+            thTask.focus();
+            thDate.innerHTML=``;
+            editDate=thDate.appendChild(inputDate.cloneNode(true));
+            editDate.value=formatDate(task.time);
+            thTask.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    finishEditing();
+            }
+            });
+            thDate.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    finishEditing();
+                    }
+            });
+
+            function finishEditing(){
+                let dateFormat = /^(\d{4})[-](0?[1-9]|1[012])[-](0?[1-9]|[12][0-9]|3[01])$/;
+                if  (editDate.value.match(dateFormat)){
+                task.text=thTask.innerHTML;
+                thTask.setAttribute(`contenteditable`,false);
+                task.date=Date(thDate.innerHTML);
+                thDate.innerHTML=task.time.toDateString();
+                updateServer();
+                };
+            }
+
+            function formatDate() {
+                var d = new Date(task.time),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+                
+                if (month.length < 2) 
+                    month = '0' + month;
+                if (day.length < 2) 
+                    day = '0' + day;
+            
+                return [year, month, day].join('-');
+            }
+    }
+
+    function deleteTask(task, DOMitem) {
+    DOMitem.style.display = `none`;
+
+    const index = tasks.indexOf(task);
+    if (index > -1) {
+        tasks.splice(index, 1);
+        updateServer();
+    }
+    }
 }
+
 
 function updateServer() {
   localStorage.setItem(`tasks`, JSON.stringify(tasks));
