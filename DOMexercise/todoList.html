@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Todo List</title>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
     <style>
    table, th, td {
        border: 1px solid black;
@@ -81,14 +82,16 @@ input:checked + .slider:before {
       <input type="date" name="item" id="date">
       <button id="itemBtn">Add item</button>
     </div>
+    <br>
 
-    <table>
-      <tr >
+    <table class="pure-table pure-table-horizontal">
+      <thead><tr >
         <th>Task</th>
         <th>Date to do</th>
         <th>Done?</th>
      
-      </tr>
+      </tr></thead>
+      <tbody></tbody>
     </table>
     
       <script src="todoList.js"> </script>
